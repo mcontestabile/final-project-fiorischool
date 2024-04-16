@@ -1,0 +1,31 @@
+<mvc:View controllerName="finalproject.finalprojectfiorischool.controller.List"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns="sap.m" xmlns:f="sap.f">
+    <f:DynamicPage id="dynamicPageOverviewId" headerExpanded="true" toggleHeaderOnTitleClick="true">
+        <f:content>
+            <List id="list" items="{/Travel}" headerText="Travels" busyIndicatorDelay="0" growing="true"
+                  growingThreshold="10" growingScrollToLoad="true" mode="{= ${device>/system/phone} ? 'None' : 'SingleSelectMaster'}"
+                  selectionChange="onSelect">
+                <headerToolbar>
+                    <Toolbar id="toolbar">
+                        <Title id="title" text="{i18n>travelListHeader}"/>
+                        <ToolbarSpacer id="genToolbarSpacer"/>
+                        <SearchField id="searchField" width="40%" search=".onFilterTravels"/>
+                    </Toolbar>
+                </headerToolbar> 
+                  <items>
+                    <ObjectListItem id="objectListItem" title="Agency ID {AgencyID}" intro="{TravelID}"
+                                    type="{= ${device>/system/phone} ? 'Active' : 'Inactive'}" press="onSelect">
+			        <ObjectAttribute id="label6"
+                                        text="{
+                                            path: 'Status',
+						                    formatter: '.formatter.statusLabel'
+					}" />
+                    <ObjectAttribute id="genObjectAttribute1" text="Begin date {BeginDate}"/>
+			        <ObjectAttribute id="genObjectAttribute2" text="End date {EndDate}" />
+                </ObjectListItem>
+                </items>
+            </List>
+        </f:content> 
+    </f:DynamicPage>
+</mvc:View>

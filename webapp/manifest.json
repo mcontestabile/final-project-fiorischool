@@ -1,0 +1,174 @@
+{
+    "_version": "1.59.0",
+    "sap.app": {
+        "id": "finalproject.finalprojectfiorischool",
+        "type": "application",
+        "i18n": "i18n/i18n.properties",
+        "applicationVersion": {
+            "version": "0.0.1"
+        },
+        "title": "{{appTitle}}",
+        "description": "{{appDescription}}",
+        "resources": "resources.json",
+        "sourceTemplate": {
+            "id": "@sap-ux/fiori-freestyle-writer:basic",
+            "version": "0.11.15",
+            "toolsId": "13279ddd-9a80-4c18-a628-b4998b89256d"
+        },
+        "dataSources": {
+            "mainService": {
+                "uri": "/sap/opu/odata/sap/ZUI_EXERCISE3_TRAVEL_02",
+                "type": "OData",
+                "settings": {
+                    "annotations": [],
+                    "localUri": "localService/metadata.xml",
+                    "odataVersion": "2.0"
+                }
+            }
+        }
+    },
+    "sap.ui": {
+        "technology": "UI5",
+        "icons": {
+            "icon": "",
+            "favIcon": "",
+            "phone": "",
+            "phone@2": "",
+            "tablet": "",
+            "tablet@2": ""
+        },
+        "deviceTypes": {
+            "desktop": true,
+            "tablet": true,
+            "phone": true
+        }
+    },
+    "sap.ui5": {
+        "flexEnabled": true,
+        "dependencies": {
+            "minUI5Version": "1.96.24",
+            "libs": {
+                "sap.m": {},
+                "sap.ui.core": {},
+                "sap.f": {},
+                "sap.suite.ui.generic.template": {},
+                "sap.ui.comp": {},
+                "sap.ui.generic.app": {},
+                "sap.ui.table": {},
+                "sap.ushell": {}
+            }
+        },
+        "contentDensities": {
+            "compact": true,
+            "cozy": true
+        },
+        "models": {
+            "i18n": {
+                "type": "sap.ui.model.resource.ResourceModel",
+                "settings": {
+                    "bundleName": "finalproject.finalprojectfiorischool.i18n.i18n",
+                    "supportedLocales": [""],
+                    "fallbackLocale": ""
+                }
+            },
+            "": {
+                "dataSource": "mainService",
+                "settings": {
+                  "defaultUpdateMethod": "PUT",
+                  "synchronizationMode": "None",
+                  "operationMode": "Server",
+                  "autoExpandSelect": true,
+                  "earlyRequests": true
+                }
+              }
+        },
+        "resources": {
+            "css": [
+                {
+                    "uri": "css/style.css"
+                }
+            ]
+        },
+        "routing": {
+            "config": {
+                "routerClass": "sap.m.routing.Router",
+                "viewType": "XML",
+                "async": true,
+                "viewPath": "finalproject.finalprojectfiorischool.view",
+                "controlAggregation": "beginColumnPages",
+                "controlId": "layout",
+                "bypassed": {
+                    "target": [
+                      "masterlist",
+                      "notFound"
+                    ]
+                  }
+            },
+            "routes": [
+                {
+                  "name": "masterlist",
+                  "pattern": "",
+                  "titleTarget": "",
+                  "greedy": false,
+                  "target": [
+                    "masterlist"
+                  ] 
+                },
+                {
+                  "name": "bookings",
+                  "pattern": "Travel/{objectId}",
+                  "titleTarget": "",
+                  "greedy": false,
+                  "target": [
+                    "masterlist",
+                    "bookings"
+                  ]
+                }
+              ],
+              "targets": {
+                "masterlist": {
+                  "viewType": "XML",
+                  "transition": "slide",
+                  "controlAggregation": "beginColumnPages",
+                  "viewId": "list",
+                  "viewName": "List",
+                  "viewLevel": 1
+                },
+                "bookings": {
+                  "viewType":	"XML",
+                  "transition":	"slide",
+                  "viewName":	"Detail",
+                  "viewLevel":	2,
+                  "viewId":	"bookings",
+                  "controlAggregation":	"midColumnPages"
+                },
+                "notFound": {
+                  "viewType": "XML",
+                  "transition":"slide",
+                  "controlAggregation": "midColumnPages",
+                  "clearControlAggregation": true,
+                  "viewName": "NotFound",
+                  "viewId": "notFound"
+                },
+                "detailObjectNotFound": {
+                  "viewType": "XML",
+                  "transition":"slide",
+                  "controlAggregation": "midColumnPages",
+                  "clearControlAggregation": true,
+                  "viewName": "DetailObjectNotFound",
+                  "viewId": "detailObjectNotFound"
+                }
+              }
+        },
+        "rootView": {
+            "viewName": "finalproject.finalprojectfiorischool.view.App",
+            "type": "XML",
+            "async": true,
+            "id": "App"
+        }
+    },
+    "sap.cloud": {
+        "public": true,
+        "service": "finalprojectfinalprojectfiorischool"
+    }
+}
