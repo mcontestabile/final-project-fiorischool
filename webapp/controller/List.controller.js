@@ -40,12 +40,14 @@ sap.ui.define(
                 var aFilter = [];
                 var sQuery = oEvent.getParameter("query");
                 if (sQuery && sQuery.length > 0) {
-                    if(sQuery === "Open") {
-                        sQuery = "O";
-                    } else if(sQuery === "Canceled") {
+                    if(sQuery === "Planned" || sQuery === "planned") {
+                        sQuery = "P";
+                    } else if(sQuery === "Booked" || sQuery === "booked") {
+                        sQuery = "B";
+                    } else if(sQuery === "Canceled" || sQuery === "canceled") {
                         sQuery = "X";
-                    } else if(sQuery === "Accepted") {
-                        sQuery = "A";
+                    } else if(sQuery === "New" || sQuery === "new") {
+                        sQuery = "N";
                     }
                     
                     aFilter.push(new Filter("Status", FilterOperator.Contains, sQuery));
