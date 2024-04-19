@@ -31,12 +31,8 @@ sap.ui.define(
                 var oHistory = History.getInstance();
                 var sPreviousHash = oHistory.getPreviousHash();
 
-                if (sPreviousHash !== undefined) {
-                    window.history.go(-1);
-                } else {
-                    var oRouter = this.getOwnerComponent().getRouter();
-                    oRouter.navTo("masterlist", {}, true);
-                }
+                var oRouter = this.getOwnerComponent().getRouter();
+                oRouter.navTo("masterlist", {}, true);
             },
 
             // Implement the onInit function. Register the _onObjectMatched event handler for the pattern matching event of the bookings route.
@@ -69,15 +65,10 @@ sap.ui.define(
 			    this.getOwnerComponent().oListSelector.selectAListItem(sPath);
 		    },
 
-            mySuccessHandler : function() {
-                MessageToast.show(oResourceBundle.getText("approvedMessage"));
-            },
-
-            myErrorHandler : function() {
-                MessageToast.show(oResourceBundle.getText("notWorking"));
-            },
-
             onApproveDialog: function (oEvent) {
+                var data = oEvent.getSource().getBindingContext().getObject();
+                console.log(data);
+
                 if (!this.oApproveDialog) {
                     this.oApproveDialog = new Dialog({
                         type: DialogType.Message,
@@ -87,7 +78,7 @@ sap.ui.define(
                             type: ButtonType.Emphasized,
                             text: "OK",
                             press: function () {
-                                this.onApprove(oEvent);
+                                this.onApprove(data);
                                 this.oApproveDialog.close();
                             }.bind(this)
                         }),
@@ -103,7 +94,10 @@ sap.ui.define(
                 this.oApproveDialog.open();
             },
 
-            onRejectDialog: function () {
+            onRejectDialog: function (oEvent) {
+                var data = oEvent.getSource().getBindingContext().getObject();
+                console.log(data);
+
                 if (!this.oApproveDialog) {
                     this.oApproveDialog = new Dialog({
                         type: DialogType.Message,
@@ -113,7 +107,7 @@ sap.ui.define(
                             type: ButtonType.Emphasized,
                             text: "OK",
                             press: function () {
-                                onReject(oEvent);
+                                this.onReject(data);
                                 this.oApproveDialog.close();
                             }.bind(this)
                         }),
@@ -129,121 +123,98 @@ sap.ui.define(
                 this.oApproveDialog.open();
             },
 
-            onApprove : function(oEvent) {
+            onApprove : function(data) {
                 var oResourceBundle = ResourceBundle.create({ url: "i18n/i18n.properties" });
+                var oDataModel = this.getView().getModel();
+                console.log(oDataModel);
+                //var oObject = oEvent.getSource().getBindingContext().getObject();
+                var sObjectPath = this.getView().getBindingContext().getPath();
+                console.log(sObjectPath);
+                var travelID = data.TravelID;
+                var agencyID = data.AgencyID;
+                var customerID = data.CustomerID;
+                var beginDate = data.BeginDate;
+                var endDate = data.EndDate;
 
-                // Render the OData service
-                var oDataModel = new sap.ui.model.odata.ODataModel("/sap/opu/odata/sap/ZUI_EXERCISE3_TRAVEL_02");
-                var travelID = this.getView().byId("title1").getText();
+                var data = {
+                    TravelID : travelID,
+                    Status : "P",
+                    AgencyID : agencyID,
+                    CustomerID : customerID,
+                    BeginDate : beginDate,
+                    EndDate : endDate
+                };
 
-                // Read data
-                oDataModel.read("/Travel('" + travelID + "')", null, null, true, function(oData) {
-                    console.log(oData);
+                var that = this;
 
-                    // Ottenere l'etag dalla risposta della lettura
-                    var etag = oData.__metadata.etag;
-                    console.log(etag);
+                this.getView().setBusy(true);
 
-                    // Creare i dati per l'aggiornamento
-                    var data = {};
-                    
-                    data.AgencyID = oData.AgencyID;
-                    data.BeginDate = oData.BeginDate;
-                    data.BookingFee = oData.BookingFee;
-                    data.Createdat = oData.Createdat;
-                    data.Createdby = oData.Createdby;
-                    data.CurrencyCode = oData.CurrencyCode;
-                    data.CustomerID = oData.CustomerID;
-                    data.Delete_mc = oData.Delete_mc;
-                    data.Description = oData.Description;
-                    data.EndDate = oData.EndDate;
-                    data.Lastchangedat = oData.Lastchangedat;
-                    data.Lastchangedby = oData.Lastchangedby;
-                    data.TotalPrice = oData.TotalPrice;
-                    data.TravelID = oData.TravelID;
-                    data.Status = "A";
+                //var mParameters = {};
+                //mParameters.eTag = "*";
 
-                    // Esegui una richiesta GET per ottenere il token CSRF
-                    $.ajax({
-                        url: '/sap/opu/odata/sap/ZUI_EXERCISE3_TRAVEL_02',
-                        method: 'GET',
-                        headers: {
-                            'X-CSRF-Token': 'Fetch'
+                //oDataModel.update(sObjectPath, data, mParameters, { 
+                oDataModel.update(sObjectPath, data, { 
+                    context:null,
+                    success: function(oDataModel, oResponse) { 	
+                        //that.getView().byId("list").getBinding("items").refresh();
+                        //that.getView().getElementBinding().refresh();				
+                        that.getView().setBusy(false);
+                        MessageToast.show(oResourceBundle.getText("approvedMessage"));
                         },
-                        success: function(dataToken, textStatus, xhr) {
-                            // Una volta ottenuto il token CSRF, lo salva in una variabile per l'uso successivo
-                            var csrfToken = xhr.getResponseHeader('X-CSRF-Token');
-
-                            console.log("Sto per chiamare l'update");
-                    
-                            oDataModel.setHeaders({
-                                "If-Match" : etag,
-                                'X-CSRF-Token': csrfToken
-                            });
-
-                            //debugger;
-                            oDataModel.update("/Travel('" + travelID + "')", data, function() {
-                                //MessageToast.show(oResourceBundle.getText("approvedMessage"));
-                                alert(oResourceBundle.getText("approvedMessage"));
-                            }, function() {
-                                MessageToast.show(oResourceBundle.getText("notWorking"));
-                            });
-                        }
-                    });
-                }, function(error){
-                    alert("ERROR");
-                });
+                    error: function(err) {
+                        that.getView().setBusy(false);
+                        MessageToast.show(oResourceBundle.getText("notWorking"));
+                    }
+                } );
                 
                 this.onNavBack();
-
-                //var oModel = this.oDataModel;
-                //console.log("oModel: " + oModel);
-                //console.log("TravelID: " + oEvent.getParameter("title1").getText());
-                //var oBindingContext = oEvent.getParameter("list").getBindingContext();
-                //console.log("oBindingContext: " + oBindingContext);
-                //oModelData = oModel.getData();
-                //console.log("oModelData:" + oModelData);
-                //console.log(this.getOwnerComponent().oListSelector);
-                /*
-                debugger;
-                var oMyComp = this.getOwnerComponent();
-                var oMyListSel = oMyComp.oListSelector;
-                var sMyPath = oMyListSel.getBindingPath();
-                console.log(sMyPath);
-                console.log("getModel " + this._bindView().oModel);
-                console.log("onApprove TravelID " + this.getOwnerComponent().oListSelector.getBindingPath());
-                oModel = this._bindView().oModel;
-                */
-                //oModel.update("/Travel('" + this.byId("title1").getText() + "')", oData, {success: mySuccessHandler, error: myErrorHandler});
-                
-                /*
-                this.byId("list").getBinding("items").update({
-                    "Status": "A"
-                }).update().then(function () {
-                    MessageToast.show(oResourceBundle.getText("customerCreatedMessage"));
-                });
-                */
             },
 
-            onReject : function() {
-                var oModelData = this.getView().getModel("customer").getData();
-                var oResourceBundle = this.getView().getModel("i18n").getResourceBundle();
+            onReject : function(data) {
+                var oResourceBundle = ResourceBundle.create({ url: "i18n/i18n.properties" });
+                var oDataModel = this.getView().getModel();
+                console.log(oDataModel);
+                //var oObject = oEvent.getSource().getBindingContext().getObject();
+                var sObjectPath = this.getView().getBindingContext().getPath();
+                console.log(sObjectPath);
+                var travelID = data.TravelID;
+                var agencyID = data.AgencyID;
+                var customerID = data.CustomerID;
+                var beginDate = data.BeginDate;
+                var endDate = data.EndDate;
 
-                if (oModelData.Discount === undefined) { oModelData.Discount = 0; }
+                var data = {
+                    TravelID : travelID,
+                    Status : "X",
+                    AgencyID : agencyID,
+                    CustomerID : customerID,
+                    BeginDate : beginDate,
+                    EndDate : endDate
+                };
 
-                this.byId("customerTable").getBinding("items").create({
-                    "Form": oModelData.Form,
-                    "CustomerName": oModelData.CustomerName,
-                    "Discount": oModelData.Discount + "", //Values for property 'Discount' must be quoted in the payload
-                    "Street": oModelData.Street,
-                    "PostCode": oModelData.PostCode,
-                    "City": oModelData.City,
-                    "Country": oModelData.Country,
-                    "Email": oModelData.Email,
-                    "Telephone": oModelData.Telephone
-                }).created().then(function () {
-                    MessageToast.show(oResourceBundle.getText("rejectedMessage"));
-                });
+                var that = this;
+
+                this.getView().setBusy(true);
+
+                //var mParameters = {};
+                //mParameters.eTag = "*";
+
+                //oDataModel.update(sObjectPath, data, mParameters, { 
+                oDataModel.update(sObjectPath, data, { 
+                    context:null,
+                    success: function(oDataModel, oResponse) { 	
+                        //that.getView().byId("list").getBinding("items").refresh();
+                        //that.getView().getElementBinding().refresh();				
+                        that.getView().setBusy(false);
+                        MessageToast.show(oResourceBundle.getText("rejectedMessage"));
+                        },
+                    error: function(err) {
+                        that.getView().setBusy(false);
+                        MessageToast.show(oResourceBundle.getText("notWorking"));
+                    }
+                } );
+                
+                this.onNavBack();
             },
             
             // Implement a function named _bindView. The function takes one argument named sObjectPath.

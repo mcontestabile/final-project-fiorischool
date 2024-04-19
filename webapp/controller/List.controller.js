@@ -87,7 +87,7 @@ sap.ui.define(
             // Implement the event handler for the select event of the list. The assign
             // function to handle the event was called onSelect. Invoke the _showDetail
             // method and pass the selected item to the function. The selection behavior
-            // of the table depends on whether the app is running on a mobile device or not.
+            // of the list depends on whether the app is running on a mobile device or not.
             onSelect: function(oEvent) {
                 this._showDetail(oEvent.getParameter("listItem") || oEvent.getSource());
             },
@@ -116,4 +116,4 @@ sap.ui.define(
                 );
             }
         });
-    });
+    });    

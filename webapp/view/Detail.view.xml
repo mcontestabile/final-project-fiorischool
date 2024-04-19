@@ -16,7 +16,7 @@
             <FlexBox wrap="Wrap" id="flexBox">
                 <Avatar id="avatar" src="sap-icon://flight"/>
                 <layout:VerticalLayout id="verticalLayout1" class="sapUiSmallMarginBeginEnd" binding="">
-                    <Label id="label1" text="Travel ID {travel>/TravelID}"/>
+                    <Label id="label1" text="Travel ID {TravelID}"/>
                     <Label id="label2" text="Booking fee {BookingFee}"/>
                     <Label id="label3" text="Total price {TotalPrice}"/>
                     <Label id="label4" text="Currency code {CurrencyCode}"/>
@@ -64,10 +64,10 @@
             </ux:ObjectPageSection>           
 		</ux:sections>
         <ux:footer>
-			<m:OverflowToolbar id="overflowToolbar">
+			<m:OverflowToolbar id="overflowToolbar" visible="{= ${Status} !== 'P' &amp;&amp; ${Status} !== 'X'}">
 				<m:ToolbarSpacer id="toolbarSpacer"/>
-				<m:Button id="acceptButton" icon="sap-icon://create" type="Accept" text="Approve"  press="onApproveDialog" visible="{= ${Status} !== 'A' &amp;&amp; ${Status} !== 'X'}"/>
-				<m:Button id="rejectButton" icon="sap-icon://delete" type="Reject" text="Reject"  press="onRejectDialog" visible="{= ${Status} !== 'A' &amp;&amp; ${Status} !== 'X'}"/>
+				<m:Button id="acceptButton" icon="sap-icon://create" type="Accept" text="Approve"  press="onApproveDialog"/>
+				<m:Button id="rejectButton" icon="sap-icon://delete" type="Reject" text="Reject"  press="onRejectDialog"/>
 			</m:OverflowToolbar>
 		</ux:footer>
 	</ux:ObjectPageLayout>
