@@ -1,0 +1,16 @@
+{
+    "Status": [{
+        "key" : "P",
+        "name" : "Planned"
+    }, {
+        "key" : "B",
+        "name" : "Booked"
+    }, {
+        "key" : "X",
+        "name" : "Canceled"
+    }, {
+        "key" : "N",
+        "name" : "New"
+    }
+    ]
+}

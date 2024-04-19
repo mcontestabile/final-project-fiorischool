@@ -114,7 +114,7 @@ sap.ui.define(
                         endButton: new Button({
                             text: "Cancel",
                             press: function () {
-                                this.oApproveDialog.close();
+                                this.oRejectDialog.close();
                             }.bind(this)
                         })
                     });
@@ -138,7 +138,7 @@ sap.ui.define(
 
                 var data = {
                     TravelID : travelID,
-                    Status : "P",
+                    Status : "B",
                     AgencyID : agencyID,
                     CustomerID : customerID,
                     BeginDate : beginDate,
